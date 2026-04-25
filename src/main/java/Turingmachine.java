@@ -12,11 +12,12 @@ public class TuringMachine {
     private Map<SourceFunction, ImageFunction> Transitions = new HashMap<>();
     private int Counter;
     private int CurrTapePosition;
+    private int CurrState = 1;
     private final int StartState = 1;
     private final int AcceptedState = 2;
     private Tape tape;
 
-    public TuringMachine(String goedelnumber){
+    public TuringMachine(){
         Counter = 0;
         CurrTapePosition = 1;
         tape = new Tape();
@@ -25,17 +26,40 @@ public class TuringMachine {
     /**
      * Main calculation logic
      * @param input from user
-     * @return result of the calculation
+     * @return true if the input is accepted, false otherwise
      */
-    public int calculate(String input){
+    public boolean calculate(String input){
         tape.initTapeWithInput(input);
-
+        int inputLength = input.length();
         String[] parsedInput = input.split("");
-        for(String curr : parsedInput) {
+        int[] parsedInputAsInt = new int[inputLength];
 
+        // convert input to Integer Array
+        for(int i = 0; i < inputLength; i++) {
+            parsedInputAsInt[i] = parsedInput[i].charAt(0) - '0';
         }
 
-        return 0;
+        tape.initTapeWithInput(input);
+
+        //SourceFunction initStateAndInput = new SourceFunction(getStartState(), parsedInputAsInt[0]);
+        for(int currInput : parsedInputAsInt) {
+            // Use defined inputs
+
+            ImageFunction mapForInput = Transitions.get(new SourceFunction(getCurrState(), currInput));
+            if (mapForInput != null) { // proceed only if the next calculation step exist
+                int nextState = mapForInput.getState();
+                int write = mapForInput.getAlphabet();
+                int nextHeadPos = mapForInput.getHead();
+                tape.updateTape(nextState, write, nextHeadPos);
+                setCurrState(nextState);
+                setCurrTapePosition(nextHeadPos);
+                incrementCounter();
+            } else { // stuck
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public int calculateInStep() {
@@ -52,8 +76,15 @@ public class TuringMachine {
      * return true if parser completes successfully, false if the gödel number is invalid
      */
     public boolean parse(String goedNum){
+        // trim and remove leading 1 from the input if any exists.
+        goedNum = goedNum.trim();
+        if (goedNum.charAt(0) == '1') {
+            goedNum = goedNum.substring(1);
+        }
+        if (goedNum.charAt(goedNum.length() - 1) == '1') return false;
 
-        String[] parsedTransitions = goedNum.split("11"); // Store each transition as one element
+        // Store transitions in map
+        String[] parsedTransitions = goedNum.split("11");
         for (String parsedTransition : parsedTransitions) {
             String[] parsedZeros = parsedTransition.split("1");
             if (parsedZeros.length != 5) {
@@ -72,7 +103,39 @@ public class TuringMachine {
         return Transitions;
     }
 
-    public int nextState(){
-        return 0;
+    public int getCounter() {
+        return Counter;
+    }
+
+    public void incrementCounter() {
+        Counter++;
+    }
+
+    public int getCurrTapePosition() {
+        return CurrTapePosition;
+    }
+
+    public void setCurrTapePosition(int direction) {
+        CurrTapePosition = (direction == 1) ? CurrTapePosition-- : CurrTapePosition++;
+    }
+
+    public int getCurrState() {
+        return CurrState;
+    }
+
+    public void setCurrState(int currState) {
+        CurrState = currState;
+    }
+
+    public int getStartState() {
+        return StartState;
+    }
+
+    public int getAcceptedState() {
+        return AcceptedState;
+    }
+
+    public Tape getTape() {
+        return tape;
     }
 }
