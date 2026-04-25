@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This class represents the turing machine and owns the main calculation logic
@@ -11,15 +12,15 @@ import java.util.Map;
 public class TuringMachine {
     private Map<SourceFunction, ImageFunction> Transitions = new HashMap<>();
     private int Counter;
-    private int CurrTapePosition;
+    private int CurrHeadPosition;
     private int CurrState = 1;
-    private final int StartState = 1;
-    private final int AcceptedState = 2;
+    //private final int StartState = 1;
+    //private final int AcceptedState = 2;
     private Tape tape;
 
     public TuringMachine(){
         Counter = 0;
-        CurrTapePosition = 1;
+        CurrHeadPosition = 0;
         tape = new Tape();
     }
 
@@ -29,32 +30,29 @@ public class TuringMachine {
      * @return true if the input is accepted, false otherwise
      */
     public boolean calculate(String input){
-        tape.initTapeWithInput(input);
+        // convert input to Integer Array and initialize the tape
         int inputLength = input.length();
         String[] parsedInput = input.split("");
         int[] parsedInputAsInt = new int[inputLength];
-
-        // convert input to Integer Array
         for(int i = 0; i < inputLength; i++) {
             parsedInputAsInt[i] = parsedInput[i].charAt(0) - '0';
         }
+        tape.initTapeWithInput(parsedInputAsInt);
 
-        tape.initTapeWithInput(input);
-
-        //SourceFunction initStateAndInput = new SourceFunction(getStartState(), parsedInputAsInt[0]);
-        for(int currInput : parsedInputAsInt) {
-            // Use defined inputs
-
-            ImageFunction mapForInput = Transitions.get(new SourceFunction(getCurrState(), currInput));
-            if (mapForInput != null) { // proceed only if the next calculation step exist
+        // process stored input on the tape till the accepted state is achieved
+        while (getCurrState() != 2) {
+            if (tape.getHeadPosElement().isEmpty()) return false; // No more alphabets on the tape. Not possible to proceed
+            SourceFunction processTapeElement = new SourceFunction(getCurrState(), tape.getHeadPosElement().get());
+            ImageFunction mapForInput = Transitions.get(processTapeElement);
+            if (mapForInput != null) { // proceed only if the next calculation step exists
                 int nextState = mapForInput.getState();
                 int write = mapForInput.getAlphabet();
                 int nextHeadPos = mapForInput.getHead();
                 tape.updateTape(nextState, write, nextHeadPos);
                 setCurrState(nextState);
-                setCurrTapePosition(nextHeadPos);
+                setCurrHeadPosition(nextHeadPos);
                 incrementCounter();
-            } else { // stuck
+            } else { // get stuck
                 return false;
             }
         }
@@ -111,12 +109,12 @@ public class TuringMachine {
         Counter++;
     }
 
-    public int getCurrTapePosition() {
-        return CurrTapePosition;
+    public int getCurrHeadPosition() {
+        return CurrHeadPosition;
     }
 
-    public void setCurrTapePosition(int direction) {
-        CurrTapePosition = (direction == 1) ? CurrTapePosition-- : CurrTapePosition++;
+    public void setCurrHeadPosition(int direction) {
+        CurrHeadPosition = (direction == 1) ? CurrHeadPosition-- : CurrHeadPosition++;
     }
 
     public int getCurrState() {
@@ -127,13 +125,13 @@ public class TuringMachine {
         CurrState = currState;
     }
 
-    public int getStartState() {
-        return StartState;
-    }
-
-    public int getAcceptedState() {
-        return AcceptedState;
-    }
+//    public int getStartState() {
+//        return StartState;
+//    }
+//
+//    public int getAcceptedState() {
+//        return AcceptedState;
+//    }
 
     public Tape getTape() {
         return tape;
