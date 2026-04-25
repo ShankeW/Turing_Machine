@@ -9,4 +9,9 @@ public class ImageFunction extends Functions{
     public int getHead() {
         return Head;
     }
+
+    @Override
+    public String toString(){
+        return "(" + super.getState() + ", " + super.getAlphabet() + ", " + Head + ")";
+    }
 }

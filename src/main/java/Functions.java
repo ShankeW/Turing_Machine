@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Functions {
     private int State;
     private int Alphabet;
@@ -13,5 +15,22 @@ public class Functions {
 
     public int getAlphabet() {
         return Alphabet;
+    }
+
+    public String toString(){
+        return "(" + State + ", " + Alphabet + ")";
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(State, Alphabet);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Functions toCompare = (Functions) o;
+        return (State == toCompare.getState() && Alphabet == toCompare.getAlphabet());
     }
 }
