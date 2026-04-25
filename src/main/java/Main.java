@@ -1,11 +1,38 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
-    public static void main (String[] args){
-        System.out.println("test");
-        String Input1 = "010010001010011000101010010110001001001010011000100010001010";
-        String Input2 = "1010010100100110101000101001100010010100100110001010010100";
+    public static void main (String[] args) throws FileNotFoundException {
+//        System.out.print("Choose desired TM:\n> ");
+//        Scanner scanInput = new Scanner(System.in);
+//        String input = scanInput.next();
+//        int inputInt = input.trim().charAt(0) - '0';
+//
+//        ArrayList<String> goedelnumbers = new ArrayList<>();
+//        String desiredTM = "";
+//        try {
+//            File TM = new File("Turing_Machine/src/main/resources/goedelnumber.txt");
+//            Scanner fileReader = new Scanner(TM);
+//            while(fileReader.hasNextLine()) {
+//                goedelnumbers.add(fileReader.nextLine());
+//            }
+//            while (inputInt > goedelnumbers.size()){
+//                System.out.println("Enter a valid Number.");
+//            }
+//            desiredTM = goedelnumbers.get(inputInt);
+//            fileReader.close();
+//            scanInput.close();
+//        } catch (FileNotFoundException e) {
+//            System.out.println("File not found.");
+//        }
+
+        System.out.print("Enter your goedelnumber: \n> ");
+        Scanner scan = new Scanner(System.in);
+        String UserTM = scan.next();
         TuringMachine TM = new TuringMachine();
-        TM.parse(Input1);
-        TM.parse(Input2);
+        TM.parse(UserTM);
+        TM.getTransitionMapping();
     }
 }

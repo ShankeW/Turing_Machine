@@ -38,8 +38,8 @@ public class TuringMachineTest {
         String Input0 = "11";
         String Input1 = "110";
         TM.parse(GödelNumber);
-        assertTrue(TM.calculate(Input0));
-        assertTrue(TM.calculate(Input1));
+        assertTrue(TM.calculate(Input0, 1));
+        assertTrue(TM.calculate(Input1, 1));
     }
 
     @Test
@@ -48,8 +48,8 @@ public class TuringMachineTest {
         String Input0 = "1100";
         String Input1 = "0011";
         TM.parse(GödelNumber);
-        assertTrue(TM.calculate(Input0));
-        assertTrue(TM.calculate(Input1));
+        assertTrue(TM.calculate(Input0, 1));
+        assertTrue(TM.calculate(Input1, 1));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class TuringMachineTest {
         String GödelNumber = "010010001010011000101010010110001001001010011000100010001010";
         String Input0 = "011";
         TM.parse(GödelNumber);
-        assertFalse(TM.calculate(Input0));
+        assertFalse(TM.calculate(Input0, 1));
     }
 
     @Test
@@ -68,9 +68,9 @@ public class TuringMachineTest {
         String Input2 = "01";
         String Input3 = "10";
         TM.parse(GödelNumber);
-        assertFalse(TM.calculate(Input0));
-        assertFalse(TM.calculate(Input1));
-        assertFalse(TM.calculate(Input2));
-        assertFalse(TM.calculate(Input3));
+        assertFalse(TM.calculate(Input0, 1));
+        assertFalse(TM.calculate(Input1, 1));
+        assertFalse(TM.calculate(Input2, 1));
+        assertFalse(TM.calculate(Input3, 1));
     }
 }

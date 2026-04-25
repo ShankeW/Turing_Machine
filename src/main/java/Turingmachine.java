@@ -10,17 +10,14 @@ import java.util.Optional;
  *  -   Machine Head: 1 for moving left and 2 for moving right
  * */
 public class TuringMachine {
-    private Map<SourceFunction, ImageFunction> Transitions = new HashMap<>();
+    private final Map<SourceFunction, ImageFunction> Transitions = new HashMap<>();
+    private final Tape tape;
     private int Counter;
-    private int CurrHeadPosition;
-    private int CurrState = 1;
-    //private final int StartState = 1;
-    //private final int AcceptedState = 2;
-    private Tape tape;
+    private int CurrState;
 
     public TuringMachine(){
         Counter = 0;
-        CurrHeadPosition = 0;
+        CurrState = 1;
         tape = new Tape();
     }
 
@@ -29,7 +26,7 @@ public class TuringMachine {
      * @param input from user
      * @return true if the input is accepted, false otherwise
      */
-    public boolean calculate(String input){
+    public boolean calculate(String input, int modus){
         // convert input to Integer Array and initialize the tape
         int inputLength = input.length();
         String[] parsedInput = input.split("");
@@ -50,22 +47,24 @@ public class TuringMachine {
                 int nextHeadPos = mapForInput.getHead();
                 tape.updateTape(nextState, write, nextHeadPos);
                 setCurrState(nextState);
-                setCurrHeadPosition(nextHeadPos);
                 incrementCounter();
             } else { // get stuck
                 return false;
             }
+
+            // show tape content for step-modus
+            if (modus == 2) tape.showTape();
         }
 
         return true;
     }
 
-    public int calculateInStep() {
-        return -1;
+    public void calculateInRun(String input) {
+        calculate(input, 1);
     }
 
-    public int calculateInRun() {
-        return -1;
+    public void calculateInStep(String input) {
+        calculate(input, 2);
     }
 
     /**
@@ -109,14 +108,6 @@ public class TuringMachine {
         Counter++;
     }
 
-    public int getCurrHeadPosition() {
-        return CurrHeadPosition;
-    }
-
-    public void setCurrHeadPosition(int direction) {
-        CurrHeadPosition = (direction == 1) ? CurrHeadPosition-- : CurrHeadPosition++;
-    }
-
     public int getCurrState() {
         return CurrState;
     }
@@ -124,14 +115,6 @@ public class TuringMachine {
     public void setCurrState(int currState) {
         CurrState = currState;
     }
-
-//    public int getStartState() {
-//        return StartState;
-//    }
-//
-//    public int getAcceptedState() {
-//        return AcceptedState;
-//    }
 
     public Tape getTape() {
         return tape;
