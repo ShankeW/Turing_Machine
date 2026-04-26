@@ -5,15 +5,16 @@ import java.util.Optional;
 /**
  * This class represents the turing machine and owns the main calculation logic
  * Basic definitions:
- *  -   State definition: Start state = 1, Accepted state = 2, other states beginn with = 3, 4, 5...
- *  -   Input Alphabets: 0, 1, B (for blank)
- *  -   Machine Head: 1 for moving left and 2 for moving right
+ *  -   State definition: Start state = 1, Accepted state = 2.
+ *  -   Input Alphabets: 0, 1, " " (for blank)
+ *  -   Write/read Head: 1 for moving left and 2 for moving right
  * */
 public class TuringMachine {
     private final Map<SourceFunction, ImageFunction> Transitions = new HashMap<>();
     private final Tape tape;
     private int Counter;
     private int CurrState;
+    private int CalcSpeed;
 
     public TuringMachine(){
         Counter = 0;
@@ -22,11 +23,12 @@ public class TuringMachine {
     }
 
     /**
-     * Main calculation logic
-     * @param input from user
-     * @return true if the input is accepted, false otherwise
+     * Main calculation logic.
+     * @param input from user.
+     * @param modus the desired calculation modus chosen by user.
+     * @return true if the input is accepted, false otherwise.
      */
-    public boolean calculate(String input, int modus){
+    public boolean calculate(String input, int modus) {
         // convert input to Integer Array and initialize the tape
         int inputLength = input.length();
         String[] parsedInput = input.split("");
@@ -34,11 +36,16 @@ public class TuringMachine {
         for(int i = 0; i < inputLength; i++) {
             parsedInputAsInt[i] = parsedInput[i].charAt(0) - '0';
         }
+
         tape.initTapeWithInput(parsedInputAsInt);
+
+        if (modus == 2) {
+            System.out.println("Initial tape");
+            tape.showTape();
+        }
 
         // process stored input on the tape till the accepted state is achieved
         while (getCurrState() != 2) {
-            if (tape.getHeadPosElement().isEmpty()) return false; // No more alphabets on the tape. Not possible to proceed
             SourceFunction processTapeElement = new SourceFunction(getCurrState(), tape.getHeadPosElement().get());
             ImageFunction mapForInput = Transitions.get(processTapeElement);
             if (mapForInput != null) { // proceed only if the next calculation step exists
@@ -53,18 +60,18 @@ public class TuringMachine {
             }
 
             // show tape content for step-modus
-            if (modus == 2) tape.showTape();
+            if (modus == 2) {
+                tape.showTape();
+                System.out.println("Current state: " + getCurrState() + "\nCalculation step: " + getCounter() + "\n");
+                try {
+                    Thread.sleep(getCalcSpeed());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         return true;
-    }
-
-    public void calculateInRun(String input) {
-        calculate(input, 1);
-    }
-
-    public void calculateInStep(String input) {
-        calculate(input, 2);
     }
 
     /**
@@ -80,7 +87,7 @@ public class TuringMachine {
         }
         if (goedNum.charAt(goedNum.length() - 1) == '1') return false;
 
-        // Store transitions in map
+        // Store transitions in a map
         String[] parsedTransitions = goedNum.split("11");
         for (String parsedTransition : parsedTransitions) {
             String[] parsedZeros = parsedTransition.split("1");
@@ -96,16 +103,16 @@ public class TuringMachine {
         return true;
     }
 
-    public Map<SourceFunction, ImageFunction> getTransitionMapping(){
-        return Transitions;
+    public void incrementCounter() {
+        Counter++;
     }
 
     public int getCounter() {
         return Counter;
     }
 
-    public void incrementCounter() {
-        Counter++;
+    public Map<SourceFunction, ImageFunction> getTransitionMapping(){
+        return Transitions;
     }
 
     public int getCurrState() {
@@ -118,5 +125,13 @@ public class TuringMachine {
 
     public Tape getTape() {
         return tape;
+    }
+
+    public int getCalcSpeed() {
+        return CalcSpeed;
+    }
+
+    public void setCalcSpeed(int calcSpeed) {
+        this.CalcSpeed = calcSpeed;
     }
 }
